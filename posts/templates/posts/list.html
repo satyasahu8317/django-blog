@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Recent Posts{% endblock %}
+
+{% block content %}
+    {% for post in posts %}
+        <div class="post">
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+            {% endif %}
+            <h2><a href="{% url 'posts:post_detail' post.slug %}">{{ post.title }}</a></h2>
+            <p class="date">Published {{ post.publish }} by {{ post.author }}</p>
+            {{ post.body|truncatewords:30|linebreaks }}
+        </div>
+    {% endfor %}
+{% endblock %}

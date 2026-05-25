@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+    {% endif %}
+    <h1>{{ post.title }}</h1>
+    <p class="date">Published {{ post.publish }} by {{ post.author }}</p>
+    {{ post.body|linebreaks }}
+    <p><a href="{% url 'posts:post_list' %}">← Back to Blog</a></p>
+
+    <hr>
+
+<!-- Display comments -->
+<h3>{{ comments.count }} comments</h3>
+{% for comment in comments %}
+    <div style="border-bottom: 1px solid #eee; margin-bottom: 20px; padding: 10px;">
+        <p><b>{{ comment.name }}</b> says: {{ comment.body|linebreaks }}</p>
+        <p class="date">{{ comment.created }}</p>
+    </div>
+{% empty %}
+    <p>No comments yet. Be the first!</p>
+{% endfor %}
+
+<!-- Comment Form -->
+{% if new_comment %}
+    <h2 style="color: green;">Your comment has been added.</h2>
+{% else %}
+    <h2>Add a new comment</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <p><input type="submit" value="Add comment" style="background: #3498db; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px;"></p>
+    </form>
+{% endif %}
+
+{% endblock %}
+
