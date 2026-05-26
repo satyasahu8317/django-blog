@@ -5,10 +5,26 @@ from django.utils.text import slugify
 from django.db.models import Q
 from .models import Post
 from .forms import CommentForm, PostForm  # <--- Make sure PostForm is here!
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def post_list(request):
-    posts = Post.objects.filter(status='published')
+    object_list = Post.objects.filter(status='published')
+    
+    # Show 3 posts per page (usually you do 10, but we use 3 since we have few posts)
+    paginator = Paginator(object_list, 3) 
+    page = request.GET.get('page')
+    
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        posts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results.
+        posts = paginator.page(paginator.num_pages)
     return render(request, 'posts/list.html', {'posts': posts})
+
+
 
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug, status='published')
@@ -31,6 +47,8 @@ def post_detail(request, slug):
         
     })
 
+
+
 def search(request):
     query = request.GET.get('q')
     results = [] # Fix indent
@@ -42,6 +60,8 @@ def search(request):
         )
     # Note the plural: 'posts/search.html'
     return render(request, 'posts/search.html', {'query': query, 'results': results})
+
+
 
 @login_required
 def post_create(request):
