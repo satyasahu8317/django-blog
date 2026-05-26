@@ -52,6 +52,7 @@
         <div style="text-align: right;">
             {% if user.is_authenticated %}
             <span>Welcome, <b>{{ user.username }}</b>!</span> |
+            <a href="{% url 'posts:post_create' %}" style="margin-right: 10px; color: #27ae60; font-weight: bold;">+ New Post</a>
             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit"

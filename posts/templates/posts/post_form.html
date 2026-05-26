@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Post{% endblock %}
+
+{% block content %}
+    <h2>Create a New Blog Post</h2>
+    <form method="post" enctype="multipart/form-data"> <!-- enctype is REQUIRED for images! -->
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Publish Post</button>
+    </form>
+{% endblock %}

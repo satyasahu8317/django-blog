@@ -1,9 +1,12 @@
 # pyrefly: ignore [missing-import]
 from django.contrib import admin
 from .models import Post, Category, Comment
+from django_summernote.admin import SummernoteModelAdmin
 # Register your models here.
+
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(SummernoteModelAdmin):
+    summernote_fields = ('body',)
     list_display = ('title','slug','author','publish','status')
     list_filter = ('status','publish','author')
     search_fields = ('title','body')
@@ -26,3 +29,4 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ('name', 'email','post', 'created', 'active')
     list_filter = ('active', 'created')
     search_fields = ('name', 'email', 'body')
+

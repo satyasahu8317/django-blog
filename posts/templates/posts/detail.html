@@ -8,7 +8,7 @@
     {% endif %}
     <h1>{{ post.title }}</h1>
     <p class="date">Published {{ post.publish }} by {{ post.author }}</p>
-    {{ post.body|linebreaks }}
+    {{ post.body|safe }}
     <p><a href="{% url 'posts:post_list' %}">← Back to Blog</a></p>
 
     <hr>
@@ -17,7 +17,7 @@
 <h3>{{ comments.count }} comments</h3>
 {% for comment in comments %}
     <div style="border-bottom: 1px solid #eee; margin-bottom: 20px; padding: 10px;">
-        <p><b>{{ comment.name }}</b> says: {{ comment.body|linebreaks }}</p>
+        <p><b>{{ comment.name }}</b> says: {{ comment.body|safe }}</p>
         <p class="date">{{ comment.created }}</p>
     </div>
 {% empty %}

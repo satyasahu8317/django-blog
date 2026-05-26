@@ -1,10 +1,10 @@
-# pyrefly: ignore [missing-import]
-from django.shortcuts import render,get_object_or_404
-from .models import Post
-from django.db.models import Q
-from .forms import CommentForm
 
-# Create your views here.
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.utils.text import slugify
+from django.db.models import Q
+from .models import Post
+from .forms import CommentForm, PostForm  # <--- Make sure PostForm is here!
 
 def post_list(request):
     posts = Post.objects.filter(status='published')
@@ -42,3 +42,17 @@ def search(request):
         )
     # Note the plural: 'posts/search.html'
     return render(request, 'posts/search.html', {'query': query, 'results': results})
+
+@login_required
+def post_create(request):
+    if request.method =='POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.slug = slugify(post.title)
+            post.save()
+            return redirect('posts:post_detail', slug=post.slug)
+    else:
+        form = PostForm()
+    return render(request, 'posts/post_form.html',{'form':form})
