@@ -2,6 +2,11 @@
 
 {% block title %}{{ post.title }}{% endblock %}
 
+{% block meta_description %}{{ post.body|striptags|truncatewords:20 }}{% endblock %}
+{% block og_title %}{{ post.title }} | Digital Canvas{% endblock %}
+{% block og_description %}{{ post.body|striptags|truncatewords:20 }}{% endblock %}
+{% block og_image %}{% if post.image %}{{ post.image.url }}{% endif %}{% endblock %}
+
 {% block content %}
     <article class="max-w-3xl mx-auto">
         <header class="mb-12 text-center">
@@ -11,7 +16,7 @@
                 </span>
             {% endif %}
             
-            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6">
                 {{ post.title }}
             </h1>
             
@@ -20,8 +25,10 @@
                     <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold text-slate-600">
                         {{ post.author.username|slice:":1"|upper }}
                     </div>
-                    <span>{{ post.author.username }}</span>
+                    <span class="hover:text-indigo-600 cursor-pointer transition-colors">{{ post.author.username }}</span>
                 </div>
+                <span class="text-slate-300">•</span>
+                <span>{{ post.get_read_time }} min read</span>
                 <span class="text-slate-300">•</span>
                 <time>{{ post.publish|date:"F d, Y" }}</time>
             </div>
@@ -34,7 +41,7 @@
         {% endif %}
 
         <!-- Content Body -->
-        <div class="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-a:text-indigo-600 prose-img:rounded-2xl">
+        <div class="prose prose-lg dark:prose-invert prose-indigo max-w-none prose-headings:font-bold prose-a:text-indigo-600 prose-img:rounded-3xl prose-p:text-slate-600 dark:prose-p:text-slate-300">
             {{ post.body|safe }}
         </div>
 

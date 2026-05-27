@@ -1,6 +1,5 @@
-# pyrefly: ignore [missing-import]
+import math
 from django.db import models
-# pyrefly: ignore [missing-import]
 from django.contrib.auth.models import User
 
 
@@ -42,6 +41,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_read_time(self):
+        from django.utils.html import strip_tags
+        word_count = len(strip_tags(self.body).split())
+        read_time = math.ceil(word_count / 200)
+        return read_time
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name = 'comments')
