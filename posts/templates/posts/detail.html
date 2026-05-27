@@ -3,38 +3,95 @@
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-    {% if post.image %}
-        <img src="{{ post.image.url }}" alt="{{ post.title }}" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
-    {% endif %}
-    <h1>{{ post.title }}</h1>
-    <p class="date">Published {{ post.publish }} by {{ post.author }}</p>
-    {{ post.body|safe }}
-    <p><a href="{% url 'posts:post_list' %}">← Back to Blog</a></p>
+    <article class="max-w-3xl mx-auto">
+        <header class="mb-12 text-center">
+            {% if post.category %}
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full mb-4 inline-block">
+                    {{ post.category.name }}
+                </span>
+            {% endif %}
+            
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-6">
+                {{ post.title }}
+            </h1>
+            
+            <div class="flex items-center justify-center gap-4 text-slate-500 font-medium">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold text-slate-600">
+                        {{ post.author.username|slice:":1"|upper }}
+                    </div>
+                    <span>{{ post.author.username }}</span>
+                </div>
+                <span class="text-slate-300">•</span>
+                <time>{{ post.publish|date:"F d, Y" }}</time>
+            </div>
+        </header>
 
-    <hr>
+        {% if post.image %}
+            <div class="mb-12 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-100">
+                <img src="{{ post.image.url }}" class="w-full h-auto object-cover max-h-[500px]">
+            </div>
+        {% endif %}
 
-<!-- Display comments -->
-<h3>{{ comments.count }} comments</h3>
-{% for comment in comments %}
-    <div style="border-bottom: 1px solid #eee; margin-bottom: 20px; padding: 10px;">
-        <p><b>{{ comment.name }}</b> says: {{ comment.body|safe }}</p>
-        <p class="date">{{ comment.created }}</p>
-    </div>
-{% empty %}
-    <p>No comments yet. Be the first!</p>
-{% endfor %}
+        <!-- Content Body -->
+        <div class="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-a:text-indigo-600 prose-img:rounded-2xl">
+            {{ post.body|safe }}
+        </div>
 
-<!-- Comment Form -->
-{% if new_comment %}
-    <h2 style="color: green;">Your comment has been added.</h2>
-{% else %}
-    <h2>Add a new comment</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ comment_form.as_p }}
-        <p><input type="submit" value="Add comment" style="background: #3498db; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px;"></p>
-    </form>
-{% endif %}
+        <!-- Comments Section -->
+        <section class="mt-20 pt-12 border-t border-slate-200">
+            <h3 class="text-2xl font-bold mb-8">{{ comments.count }} Comments</h3>
+            
+            <div class="space-y-8 mb-16">
+                {% for comment in comments %}
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-50">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">
+                                {{ comment.name|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">{{ comment.name }}</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wide">{{ comment.created|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 text-sm italic leading-relaxed">"{{ comment.body }}"</p>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                        <p class="text-slate-400">Be the first to share your thoughts!</p>
+                    </div>
+                {% endfor %}
+            </div>
 
+            <!-- Comment Form -->
+            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl">
+                {% if new_comment %}
+                    <div class="text-center py-4">
+                        <h2 class="text-xl font-bold text-teal-400">Thanks for sharing!</h2>
+                        <p class="text-slate-400 mt-2">Your comment has been published.</p>
+                    </div>
+                {% else %}
+                    <h3 class="text-xl font-bold mb-6">Leave a Reply</h3>
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="name" placeholder="Your Name" required class="w-full bg-slate-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500">
+                            <input type="email" name="email" placeholder="Your Email" required class="w-full bg-slate-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <textarea name="body" rows="4" placeholder="Share your thoughts..." required class="w-full bg-slate-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors py-3 rounded-xl font-bold shadow-lg shadow-indigo-900/20">Post Comment</button>
+                    </form>
+                {% endif %}
+            </div>
+        </section>
+
+        <div class="mt-12 text-center">
+            <a href="{% url 'posts:post_list' %}" class="text-slate-400 hover:text-indigo-600 font-semibold transition-colors flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Feed
+            </a>
+        </div>
+    </article>
 {% endblock %}
-

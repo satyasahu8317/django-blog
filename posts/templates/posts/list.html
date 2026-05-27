@@ -1,18 +1,46 @@
 {% extends "base.html" %}
 
-{% block title %}Recent Posts{% endblock %}
-
 {% block content %}
-    {% for post in posts %}
-        <div class="post">
-            {% if post.image %}
-                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
-            {% endif %}
-            <h2><a href="{% url 'posts:post_detail' post.slug %}">{{ post.title }}</a></h2>
-            <p class="date">Published {{ post.publish }} by {{ post.author }}</p>
-            {{ post.body|truncatewords:30|linebreaks }}
-        </div>
-    {% endfor %}
-    {% include "includes/pagination.html" with page=posts %}
+    <div class="mb-12">
+        <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Latest Stories</h1>
+        <p class="mt-4 text-lg text-slate-500">Insights, tutorials, and life updates.</p>
+    </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in posts %}
+            <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                {% if post.image %}
+                    <div class="h-48 overflow-hidden">
+                        <img src="{{ post.image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        {% if post.category %}
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-1 rounded">{{ post.category.name }}</span>
+                        {% endif %}
+                        <span class="text-xs text-slate-400">{{ post.publish|date:"M d, Y" }}</span>
+                    </div>
+                    
+                    <h2 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition-colors">
+                        <a href="{% url 'posts:post_detail' post.slug %}">{{ post.title }}</a>
+                    </h2>
+                    
+                    <p class="text-slate-500 text-sm line-clamp-3 mb-4">
+                        {{ post.body|truncatewords:20|striptags }}
+                    </p>
+                    
+                    <div class="flex items-center gap-3 pt-4 border-t border-slate-50">
+                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700">
+                            {{ post.author.username|slice:":1"|upper }}
+                        </div>
+                        <span class="text-xs font-semibold text-slate-700">{{ post.author.username }}</span>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+    {% include "includes/pagination.html" with page=posts %}
 {% endblock %}
